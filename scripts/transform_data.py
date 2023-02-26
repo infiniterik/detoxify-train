@@ -50,10 +50,12 @@ def cli():
 
 @cli.command()
 @click.argument("wandb_artifact")
-@click.option("-d", "--directory")
-def upload(wandb_artifact, directory="data/"):
+@click.argument("project")
+@click.option("-d", "--directory", default="data/", type=str)
+@click.option("-e", "--entity", default=None, type=str)
+def upload(wandb_artifact, project, *, directory, entity):
     """Upload all processed datasets in the output folder to wandb"""
-    wandb.init()
+    wandb.init(project=project, entity=entity)
     artifact = wandb.Artifact(wandb_artifact, type='dataset')
     artifact.add_dir(directory)
     wandb.log_artifact(artifact)
