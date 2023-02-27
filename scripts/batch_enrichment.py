@@ -8,24 +8,12 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from anonymization import  remove_url, anonThread
 from tqdm import tqdm
 
+tqdm.pandas()
 
-def batch_enrich(df, use_gpu=True, chunk_size=32):
+def batch_enrich(df, use_gpu=False, chunk_size=32):
     text_df = df
-    text_df['proc_text'] = text_df['text'].apply(remove_url)
-    #model = BERTopic(min_topic_size=25, calculate_probabilities=False, verbose=True, vectorizer_model=TfidfVectorizer(min_df=5, max_df=0.5, stop_words='english'))
-    #topics, probs = model.fit_transform(text_df['proc_text'].tolist())
-    #def get_topic_words(top):
-    #    if top == -1:
-    #        return top
-    #    return str(top) + ': ' + ', '.join([single[0] for single in model.get_topic(top)])
-    # this saved model can be loaded to reuse the topic model
-    #model.save('bertopic_model')
-    #text_df['topic'] = topics
-    #top_terms = text_df['topic'].apply(get_topic_words).tolist()
-    #text_df['topic'] = top_terms
-    #print(text_df['topic'].value_counts())
-
-    text_df['lang'] = text_df['proc_text'].apply(lambda x: langid.classify(x)[0])
+    text_df['proc_text'] = text_df['text'].progress_apply(remove_url)
+    text_df['lang'] = text_df['proc_text'].progress_apply(lambda x: langid.classify(x)[0])
     detox = Detoxify('multilingual', device='cuda' if use_gpu else 'cpu')
     print('applying detox')
     dt_results = []
@@ -57,10 +45,10 @@ def get_text(row):
         text += row['body']
     return text
 
-def anon_enrich(df, use_gpu=True, chunk_size=32):
-    df['text'] = df.apply(get_text, axis=1)
+def anon_enrich(df, use_gpu=False, chunk_size=32):
+    #df['text'] = df.apply(get_text, axis=1)
     df = df[df['text'] != '']
-    df['datetime'] = pd.to_datetime(df['created_utc'], unit='s')
+    #df['datetime'] = pd.to_datetime(df['created_utc'], unit='s')
     anon = pd.DataFrame(df.apply(lambda row: anonThread(row)[1], axis=1).tolist())
     enr_df = batch_enrich(anon, use_gpu, chunk_size)
     return enr_df
@@ -68,3 +56,21 @@ def anon_enrich(df, use_gpu=True, chunk_size=32):
 
 #df = next(pd.read_json('/Users/mackblackburn/PycharmProjects/civil_sanctuary/misc/data/controversial_subs_last_10k.json', lines=True, chunksize=100))
 #print(anon_enrich(df))
+import click
+
+@click.command()
+@click.argument("filename")
+@click.argument("output")
+@click.option("--use-gpu", is_flag=True, default=False)
+@click.option("-c", "--chunk-size", default=32)
+def enrich(filename, output, use_gpu, chunk_size):
+    print("loading file")
+    df = pd.read_json(filename)
+    print(df)
+    print("enriching data")
+    enriched = anon_enrich(df, use_gpu, chunk_size)
+    print("writing output")
+    enriched.to_json(output)
+
+if __name__ == "__main__":
+    enrich()

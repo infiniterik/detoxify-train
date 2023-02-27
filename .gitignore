@@ -7,3 +7,6 @@ data/
 raw_data/
 wandb/
 artifacts/
+.neptune/
+__pycache__/
+.python-version

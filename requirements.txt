@@ -1,0 +1,12 @@
+pandas
+langid
+detoxify
+numpy
+transformers
+bertopic
+scikit-learn
+anonymization
+tqdm
+wandb
+click
+spacy
