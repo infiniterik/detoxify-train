@@ -80,3 +80,8 @@ class ChildFromParentWithToxicity(ChildFromParent):
     
     def target(self, row):
         return row['text_y']
+    
+def make_prochoice_enrichment():
+    ds = attach_parents(load_df("data/prochoice.enriched.json"))
+    cpt = ChildFromParentWithToxicity()
+    cpt.as_dataset(ds).save_to_disk("data/prochoice.enriched.toxicity")
