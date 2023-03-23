@@ -1,10 +1,17 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM
-from datasets import Dataset
+from transformers import AutoTokenizer, AutoModelForCausalLM, Trainer, TrainingArguments
+from torch.utils.data import Dataset
+from datasets import load_from_disk
+import wandb
+import torch
+from tqdm import tqdm
 
-def load_model(model_name, tokenizer_name=None) -> Tuple[AutoTokenizer, AutoModelForCausalLM]:
+def load_model(model_name, tokenizer_name=None) -> tuple[AutoTokenizer, AutoModelForCausalLM]:
     # Download pretrained GPT-NEO model and tokenizer
     # load tokenizer using tokenizer_name if it exists, otherwise use model_name
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_name) if tokenizer_name else AutoTokenizer.from_pretrained(model_name)
+    tokenizer.pad_token="<|pad|>"
+    tokenizer.bos_token="<|startoftext|>"
+    tokenizer.eos_token="<|endoftext|>"
     model = AutoModelForCausalLM.from_pretrained(model_name)
     return tokenizer, model
 
@@ -18,12 +25,13 @@ def make_non_toxic(text):
         return text
 
 class CausalLMDataset(Dataset):
-    def __init__(self, tokenizer, txt_list, max_length=512):
+    def __init__(self, tokenizer, txt_list, max_length=512, return_text=False):
         self.input_ids = []
         self.attn_masks = []
         self.labels = []
         self.txt_list = txt_list
-        for txt in txt_list:
+        self.return_text = return_text
+        for txt in tqdm(txt_list, desc="tokenizing"):
             encodings_dict = tokenizer('<|startoftext|>' + txt + '<|endoftext|>', truncation=True,
                                        max_length=max_length, padding="max_length")
             self.input_ids.append(torch.tensor(encodings_dict['input_ids']))
@@ -33,7 +41,9 @@ class CausalLMDataset(Dataset):
         return len(self.input_ids)
 
     def __getitem__(self, idx):
-        return self.input_ids[idx], self.attn_masks[idx], txt_list
+        if self.return_text:
+            return self.input_ids[idx], self.attn_masks[idx], self.txt_list[idx]
+        return self.input_ids[idx], self.attn_masks[idx]
 
 
     @classmethod
@@ -42,17 +52,17 @@ class CausalLMDataset(Dataset):
         return {
             "train": cls(tokenizer, dataset['train']["text"], max_length),
             "test": cls(tokenizer, dataset['test']["text"], max_length),
-            "enrichment_test": cls(tokenizer, dataset["enrichment_test"]["text"], max_length),
+            "enrichment_test": cls(tokenizer, enrichment_test["text"], max_length),
             "validation": cls(tokenizer, dataset['validation']["text"], max_length)
         }
 
 
 
 # fine-tune neogpt model on the dataset
-def fine_tune_neogpt(model, dataset, max_length=512, config):
+def fine_tune_neogpt(model, dataset, config, log_model="false"):
     # set an environment variable in python
     import os
-    os.environ["WANDB_LOG_MODEL"] = kwargs.get("log_model", "false")
+    os.environ["WANDB_LOG_MODEL"] = log_model
     
     # fine-tune model
     
@@ -63,7 +73,7 @@ def fine_tune_neogpt(model, dataset, max_length=512, config):
         per_device_train_batch_size=config.get('batch_size', 16),       # batch size per device during training
         per_device_eval_batch_size=config.get('eval_batch_size', 64),   # batch size for evaluation
         warmup_steps=config.get("warmup_steps", 500),                   # number of warmup steps for learning rate scheduler
-        weight_decay=config.get("decay", '0.01'),                       # strength of weight decay
+        weight_decay=config.get("decay", 0.01),                       # strength of weight decay
         logging_dir=config.get("logging_dir", "./logs"),                # directory for storing logs
         logging_steps=config.get("logging_steps", 1000),
         report_to="wandb"
@@ -72,9 +82,8 @@ def fine_tune_neogpt(model, dataset, max_length=512, config):
     trainer = Trainer(
         model=model,                         # the instantiated 🤗 Transformers model to be trained
         args=training_args,                  # training arguments, defined above
-        train_dataset=dataset,               # training dataset
+        train_dataset=dataset["train"],               # training dataset
         eval_dataset=dataset["validation"],
-        test_dataset=dataset["test"],
         data_collator=lambda data: {'input_ids': torch.stack([f[0] for f in data]),
                                     'attention_mask': torch.stack([f[1] for f in data]),
                                     'labels': torch.stack([f[0] for f in data])}
@@ -86,6 +95,7 @@ def fine_tune_neogpt(model, dataset, max_length=512, config):
 
 def run_test_set(model, dataset):
     # run test set
+    model.eval()
     test_results = []
     for i, m, t in dataset["enrichment_test"]:
         test_results.append((t, model.generate((i,m))))
@@ -104,8 +114,10 @@ def run_neogpt(config):
     # load dataset
     dataset = load_from_disk(config["dataset_path"])
     # create a new dataset with the non-toxic version of the test set
+    print("creating dataset")
     dataset = CausalLMDataset.create(dataset, tokenizer, max_length=512)
     # fine-tune model
+    print("fine-tuning model")
     model = fine_tune_neogpt(model, dataset, config)
 
     test_results = run_test_set(model, dataset, config)
