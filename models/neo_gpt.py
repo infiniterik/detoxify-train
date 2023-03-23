@@ -103,7 +103,7 @@ def run_test_set(model, dataset):
     return test_results    
 
 # load the dataset, fine-tune the model, and save the model, then run the test set
-def run_neogpt(config):
+def run_neogpt(config, finetune=True, test=True):
     # login to wandb and pass it the config object
     wandb.login()
     wandb.init(config=config)
@@ -117,9 +117,12 @@ def run_neogpt(config):
     print("creating dataset")
     dataset = CausalLMDataset.create(dataset, tokenizer, max_length=512)
     # fine-tune model
-    print("fine-tuning model")
-    model = fine_tune_neogpt(model, dataset, config)
+    if finetune:
+        print("fine-tuning model")
+        model = fine_tune_neogpt(model, dataset, config)
 
-    test_results = run_test_set(model, dataset, config)
+    if test:
+        test_results = run_test_set(model, dataset)
 
-run_neogpt({"model_name": "EleutherAI/gpt-neo-125M", "dataset_path": "data/prochoice.data"})
+#run_neogpt({"model_name": "EleutherAI/gpt-neo-125M", "dataset_path": "data/prochoice.data"})
+run_neogpt({"model_name": "checkpoint-13500", "dataset_path": "data/prochoice.data"})
