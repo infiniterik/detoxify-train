@@ -48,9 +48,9 @@ class SourceTarget:
     
     def __call__(self, df):
         df = df.copy()
-        df['source'] = df.apply(self.source, axis=1)
-        df['target'] = df.apply(self.target, axis=1)
-        return df[['source', 'target']]
+        df['text'] = df.apply(lambda x: self.source(x) + " " + self.target(x), axis=1)
+        #df['target_text'] = df.apply(self.target, axis=1)
+        return df[['text']]
 
     def as_dataset(self, df, train=0.8, test=0.1, val=0.1):
         df = self(df)
@@ -64,15 +64,19 @@ class SourceTarget:
         })
 
 class ChildFromParent(SourceTarget):
+    def __init__(self, tokenizer=None, max_length=512):
+        self.tokenizer = tokenizer
+        self.max_length = max_length
+
     def source(self, row):
-        return "post: " + row['text_x']
+        return "post: " + row['text_x'] + "\nreply:"
     
     def target(self, row):
-        return "reply: " + row['text_y']
+        return row['text_y']
 
 class ChildFromParentWithToxicity(ChildFromParent):
     def source(self, row):
-        return "A " + indicator_to_text(row['enrichments_x'].get("toxicity")) + " " + super().source(row)
+        return "A " + indicator_to_text(row['enrichments_x'].get("toxicity")) + " " + row["text_x"] +  "\nA " + indicator_to_text(row['enrichments_y'].get("toxicity")) + " reply:"
     
     def target(self, row):
-        return "A " + indicator_to_text(row['enrichments_y'].get("toxicity")) + " " + super().target(row)
+        return row['text_y']
