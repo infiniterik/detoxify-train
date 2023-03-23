@@ -17,12 +17,12 @@ def load_model(model_name, tokenizer_name=None) -> tuple[AutoTokenizer, AutoMode
 
 def make_non_toxic(text):
     # if the string contains "\n\nA toxic reply:" then replace it with "\n\nA non-toxic reply:" and truncate the string at the first "\n\nA non-toxic reply:"
-    toxic = "\n\nA toxic reply:"
-    nontoxic = "\n\nA non-toxic reply:"
+    toxic = "\n\nA toxic reply: "
+    nontoxic = "\n\nA non-toxic reply: "
     if toxic in text:
         return text.split(toxic)[0] + nontoxic
     else:
-        return text
+        return text.split(nontoxic)[0] + nontoxic
 
 class CausalLMDataset(Dataset):
     def __init__(self, tokenizer, txt_list, max_length=512, return_text=False):
@@ -98,7 +98,7 @@ def run_test_set(model, dataset):
     model.eval()
     test_results = []
     for i, m, t in dataset["enrichment_test"]:
-        test_results.append((t, model.generate((i,m))))
+        test_results.append((t, model.generate(i)))
     wandb.log(test_results)
     return test_results    
 
@@ -125,4 +125,5 @@ def run_neogpt(config, finetune=True, test=True):
         test_results = run_test_set(model, dataset)
 
 #run_neogpt({"model_name": "EleutherAI/gpt-neo-125M", "dataset_path": "data/prochoice.data"})
-run_neogpt({"model_name": "checkpoint-13500", "dataset_path": "data/prochoice.data"})
+run_neogpt({"model_name": "./checkpoint13500", "dataset_path": "data/prochoice.data"})
+

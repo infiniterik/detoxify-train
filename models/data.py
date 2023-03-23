@@ -76,7 +76,7 @@ class ChildFromParent(SourceTarget):
 
 class ChildFromParentWithToxicity(ChildFromParent):
     def source(self, row):
-        return "A " + indicator_to_text(row['enrichments_x'].get("toxicity")) + " " + row["text_x"] +  "\nA " + indicator_to_text(row['enrichments_y'].get("toxicity")) + " reply:"
+        return "A " + indicator_to_text(row['enrichments_x'].get("toxicity")) + "post: " + row["text_x"] +  "\nA " + indicator_to_text(row['enrichments_y'].get("toxicity")) + " reply: "
     
     def target(self, row):
         return row['text_y']
