@@ -1,3 +1,4 @@
+# taken from mack blackburn (leidos)
 import pandas as pd
 import langid
 from detoxify import Detoxify
