@@ -1,0 +1,14 @@
+{
+    "model_name": "EleutherAI/gpt-neo-125M", 
+    "dataset_path": "data/prochoice.enriched.toxicity",
+    "save_as": ".my_model/",
+    "output_dir": "./results",
+    "logging_dir": "./logs",
+    "save_strategy": "epoch",
+    "learning_rate": 2e-05,
+    "epochs": 3,
+    "batch_size": 32,
+    "eval_batch_size": 64,
+    "warmup_steps": 500,
+    "weight_decay": 0.01,
+}

@@ -85,3 +85,7 @@ def make_prochoice_enrichment():
     ds = attach_parents(load_df("data/prochoice.enriched.json"))
     cpt = ChildFromParentWithToxicity()
     cpt.as_dataset(ds).save_to_disk("data/prochoice.enriched.toxicity")
+
+def make_dataset(source, transform, target)):
+    ds = attach_parents(load_df(source))
+    transform.as_dataset(ds).save_to_disk(target)

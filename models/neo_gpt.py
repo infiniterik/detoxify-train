@@ -84,10 +84,12 @@ def fine_tune_neogpt(model, tokenizer, dataset, config, log_model="false"):
         warmup_steps=config.get("warmup_steps", 500),                   # number of warmup steps for learning rate scheduler
         weight_decay=config.get("decay", 0.01),                         # strength of weight decay
         logging_dir=config.get("logging_dir", "./logs"),                # directory for storing logs
-        logging_steps=config.get("logging_steps", 5000),
+        save_strategy=config.get("save_strategy", "epoch"),
+        save_total_limit=1,
         report_to="wandb",
         optim="adamw_ort_fused",
         log_level="debug",
+        learning_rate=2e-05,
     )
 
     trainer = ORTTrainer(
@@ -129,7 +131,10 @@ def run_neogpt(config, finetune=True, use_onnx=False):
         model = fine_tune_neogpt(model, tokenizer, dataset, config)
 
 if __name__ == "__main__":
-    run_neogpt({"model_name": "EleutherAI/gpt-neo-125M", "dataset_path": "data/prochoice.enriched.toxicity"})
+    with open("configs/config.json") as f:
+        config = json.load(f)
+    run_neogpt(config)
+    #run_neogpt({"model_name": "EleutherAI/gpt-neo-125M", "dataset_path": "data/prochoice.enriched.toxicity"})
     #run_neogpt({"model_name": "./onnx/", #"./results/checkpoint-13500/", 
     #        "tokenizer_name": "./onnx/", 
     #        "dataset_path": "data/prochoice.enriched.toxicity"}, 

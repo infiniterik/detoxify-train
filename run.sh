@@ -1,11 +1,11 @@
 echo "Building dataset"
-python -c 'from models import data; data.make_prochoice_enrichment()'
+#python -c 'from models import data; data.make_prochoice_enrichment()'
 
 echo "Training Model"
-python models/neo_gpt.py
+#python models/neo_gpt.py
 
 echo "Converting to ONNX"
-#python -m transformers.onnx --model=./my_model --feature=causal-lm-with-past --atol=1e-3 --opset 03 onnx/
+python -m transformers.onnx --model=./my_model --feature=causal-lm-with-past --atol=1e-3 --opset 03 onnx/
 
 echo "Testing Model"
-#python models/test.py >> test.txt
+python models/test.py >> test.txt

@@ -1,11 +1,8 @@
 from neo_gpt import load_model, CausalLMDataset
-from datasets import load_from_disk
 
 
 tokenizer, model = load_model("./onnx/", "./onnx/", use_onnx=True)
 
-ds = load_from_disk("data/prochoice.enriched.toxicity")
-cds = CausalLMDataset.create(ds, None, max_length=512)
 
 from tqdm import tqdm
 
@@ -18,6 +15,10 @@ generate = lambda d: model(d,
                             top_p=0.95,
                             num_return_sequences=1,
                             temperature=0.9,)
+from datasets import load_from_disk
+ds = load_from_disk("data/prochoice.enriched.toxicity")
+cds = CausalLMDataset.create(ds, None, max_length=512)
+
 for d in tqdm(cds["enrichment_test"]):
     nontoxic = generate(d)
     toxic = generate(d.replace("A non-toxic reply:", "A toxic reply:"))
