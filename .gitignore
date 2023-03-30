@@ -10,3 +10,6 @@ artifacts/
 .neptune/
 __pycache__/
 .python-version
+results/
+my_model/
+onnx/

@@ -10,3 +10,4 @@ tqdm
 wandb
 click
 spacy
+optimum[onnxruntime]
