@@ -1,4 +1,5 @@
-from transformers import GPT2Tokenizer, GPTNeoForCausalLM, Trainer, TrainingArguments
+from transformers import GPT2Tokenizer, GPTNeoForCausalLM#, Trainer, TrainingArguments
+from optimum.onnxruntime import ORTTrainer, ORTTrainingArguments
 from torch.utils.data import Dataset
 from optimum.pipelines import pipeline
 from datasets import load_from_disk
@@ -6,7 +7,7 @@ import wandb
 import torch
 from tqdm import tqdm
 
-def load_model(model_name, tokenizer_name=None, use_onnx=False) -> tuple[GPT2Tokenizer, GPTNeoForCausalLM]:
+def load_model(model_name, tokenizer_name=None, use_onnx=False):
     # Download pretrained GPT-NEO model and tokenizer
     # load tokenizer using tokenizer_name if it exists, otherwise use model_name
     tokenizer = GPT2Tokenizer.from_pretrained(tokenizer_name) if tokenizer_name else GPT2Tokenizer.from_pretrained(model_name)
@@ -23,7 +24,7 @@ def make_non_toxic(text):
     # if the string contains "\n\nA toxic reply:" then replace it with "\n\nA non-toxic reply:" and truncate the string at the first "\n\nA non-toxic reply:"
     toxic = "\n\nA toxic reply: "
     nontoxic = "\n\nA non-toxic reply: "
-    print(len(text), type(text))
+    #print(len(text), type(text))
     if toxic in text:
         return text.split(toxic)[0] + nontoxic
     else:
@@ -75,7 +76,7 @@ def fine_tune_neogpt(model, tokenizer, dataset, config, log_model="false"):
     # fine-tune model
     
     # load TrainingArguments parameters from kwargs
-    training_args = TrainingArguments(
+    training_args = ORTTrainingArguments(
         output_dir=config.get('output_dir', "./results"),               # output directory
         num_train_epochs=config.get('epochs',3),                        # total number of training epochs
         per_device_train_batch_size=config.get('batch_size', 16),       # batch size per device during training
@@ -84,17 +85,20 @@ def fine_tune_neogpt(model, tokenizer, dataset, config, log_model="false"):
         weight_decay=config.get("decay", 0.01),                         # strength of weight decay
         logging_dir=config.get("logging_dir", "./logs"),                # directory for storing logs
         logging_steps=config.get("logging_steps", 5000),
-        report_to="wandb"
+        report_to="wandb",
+        optim="adamw_ort_fused",
+        log_level="debug",
     )
 
-    trainer = Trainer(
+    trainer = ORTTrainer(
         model=model,                                  # the instantiated 🤗 Transformers model to be trained
         args=training_args,                           # training arguments, defined above
         train_dataset=dataset["train"],               # training dataset
         eval_dataset=dataset["validation"],
         data_collator=lambda data: {'input_ids': torch.stack([f[0] for f in data]),
                                     'attention_mask': torch.stack([f[1] for f in data]),
-                                    'labels': torch.stack([f[0] for f in data])}
+                                    'labels': torch.stack([f[0] for f in data])},
+        feature="causal-lm-with-past"
     )
 
     trainer.train()
