@@ -1,4 +1,4 @@
-from transformers import GPT2Tokenizer, GPTNeoForCausalLM#, Trainer, TrainingArguments
+from transformers import AutoTokenizer, GPT2Tokenizer, GPTNeoForCausalLM#, Trainer, TrainingArguments
 from optimum.onnxruntime import ORTTrainer, ORTTrainingArguments
 from torch.utils.data import Dataset
 from optimum.pipelines import pipeline
@@ -10,7 +10,12 @@ from tqdm import tqdm
 def load_model(model_name, tokenizer_name=None, use_onnx=False):
     # Download pretrained GPT-NEO model and tokenizer
     # load tokenizer using tokenizer_name if it exists, otherwise use model_name
-    tokenizer = GPT2Tokenizer.from_pretrained(tokenizer_name) if tokenizer_name else GPT2Tokenizer.from_pretrained(model_name)
+    if not tokenizer_name:
+        tokenizer_name = model_name
+    if "t5" in tokenizer_name:
+        tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+    else:
+        tokenizer = GPT2Tokenizer.from_pretrained(tokenizer_name) if tokenizer_name else GPT2Tokenizer.from_pretrained(model_name)
     tokenizer.pad_token="<|pad|>"
     tokenizer.bos_token="<|startoftext|>"
     tokenizer.eos_token="<|endoftext|>"
@@ -131,7 +136,11 @@ def run_neogpt(config, finetune=True, use_onnx=False):
         model = fine_tune_neogpt(model, tokenizer, dataset, config)
 
 if __name__ == "__main__":
-    with open("configs/config.json") as f:
+    import sys, json
+    config_file = "configs/config.json"
+    if len(sys.argv) > 1:
+        config_file = sys.argv[1]
+    with open(config_file) as f:
         config = json.load(f)
     run_neogpt(config)
     #run_neogpt({"model_name": "EleutherAI/gpt-neo-125M", "dataset_path": "data/prochoice.enriched.toxicity"})
