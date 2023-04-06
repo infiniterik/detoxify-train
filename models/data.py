@@ -2,6 +2,9 @@ from collections import defaultdict
 import re
 from datasets import Dataset, DatasetDict
 
+from tqdm import tqdm
+tqdm.pandas()
+
 class PostIndex:
     def __init__(self, data):
         self.ix = {x.id: x for x in data}
@@ -33,14 +36,18 @@ def load_df(dataset):
 def attach_parents(df):
     return df.merge(df, left_on='id', right_on='parent_id')
 
-def indicator_to_text(confidence):
+def indicator_to_text(confidence, switch=False):
     if confidence > 0.5:
+        if switch:
+            return "non-toxic"
         return "toxic"
     else:
+        if switch:
+            return "toxic"
         return "non-toxic"
 
 class SourceTarget:
-    def soure(self, row):
+    def source(self, row):
         return row['text_x']
     
     def target(self, row):
@@ -51,16 +58,18 @@ class SourceTarget:
         df['text'] = df.apply(lambda x: self.source(x) + " " + self.target(x), axis=1)
         #df['target_text'] = df.apply(self.target, axis=1)
         return df[['text']]
-
-    def as_dataset(self, df, train=0.8, test=0.1, val=0.1):
-        df = self(df)
+    
+    def split_dataset(self, df, train=0.8, test=0.1, val=0.1):
         # shuffle the dataframe
         df = df.sample(frac=1).reset_index(drop=True)
-        train, test, val = df[:int(len(df)*train)], df[int(len(df)*train):int(len(df)*(train+test))], df[int(len(df)*(train+test)):]
+        return df[:int(len(df)*train)], df[int(len(df)*train):int(len(df)*(train+test))], df[int(len(df)*(train+test)):]
+
+    def as_dataset(self, df, train=0.8, test=0.1, val=0.1):
+        train, test, validation = self.split_dataset(df, train, test, val)
         return DatasetDict({
-            'train': Dataset.from_pandas(train),
-            'test': Dataset.from_pandas(test),
-            'validation': Dataset.from_pandas(val)
+            'train': Dataset.from_pandas(self.df(train)),
+            'test': Dataset.from_pandas(self.df(test)),
+            'validation': Dataset.from_pandas(self.df(validation))
         })
 
 class ChildFromParent(SourceTarget):
@@ -86,6 +95,16 @@ def make_prochoice_enrichment():
     cpt = ChildFromParentWithToxicity()
     cpt.as_dataset(ds).save_to_disk("data/prochoice.enriched.toxicity")
 
-def make_dataset(source, transform, target)):
+def load_as_df(data="data/prochoice.enriched.json"):
+    df = attach_parents(load_df(data))
+    cpt = ChildFromParentWithToxicity()
+    train, test, val = cpt.split_dataset(df)
+    print(val.keys())
+    train = train.progress_apply(lambda x: {'source_text': cpt.source(x), "target_text": cpt.target(x)}, axis="columns")
+    test = test.progress_apply(lambda x: {'source_text': cpt.source(x), "target_text": cpt.target(x)}, axis="columns")
+    val = val.progress_apply(lambda x: {'source_text': cpt.source(x), "target_text": cpt.target(x)}, axis="columns")
+    return train, test, val
+
+def make_dataset(source, transform, target):
     ds = attach_parents(load_df(source))
     transform.as_dataset(ds).save_to_disk(target)

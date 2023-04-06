@@ -47,6 +47,11 @@ RUN python -m torch_ort.configure
 
 RUN pip install optimum
 
+RUN apt-get install curl 
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && apt-get install git-lfs
+RUN git lfs install
+RUN git clone https://huggingface.co/t5-large
+
 WORKDIR /home
 #COPY requirements.txt .
 #RUN pip install -r requirements.txt
