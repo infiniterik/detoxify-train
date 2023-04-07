@@ -2,4 +2,5 @@ set -e
 
 pip install --upgrade git+https://github.com/knoxml/simplet5
 
-python models/t5.py
+mkdir -p outputs/
+python models/t5.py -m "test()"
