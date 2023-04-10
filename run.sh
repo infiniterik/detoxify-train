@@ -1,3 +1,5 @@
+set -e
+
 echo "Building dataset"
 #python -c 'from models import data; data.make_prochoice_enrichment()'
 

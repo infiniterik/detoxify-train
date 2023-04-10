@@ -1,4 +1,4 @@
-from transformers import AutoTokenizer, GPT2Tokenizer, GPTNeoForCausalLM#, Trainer, TrainingArguments
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, GPT2Tokenizer, GPTNeoForCausalLM#, Trainer, TrainingArguments
 from optimum.onnxruntime import ORTTrainer, ORTTrainingArguments
 from torch.utils.data import Dataset
 from optimum.pipelines import pipeline
@@ -20,7 +20,8 @@ def load_model(model_name, tokenizer_name=None, use_onnx=False):
     tokenizer.bos_token="<|startoftext|>"
     tokenizer.eos_token="<|endoftext|>"
     if use_onnx:
-        model = pipeline("text-generation", model=model_name, accelerator="ort")
+        #model = pipeline("text-generation", model=model_name, accelerator="ort")
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_name, accelerator="ort")
     else:
         model = GPTNeoForCausalLM.from_pretrained(model_name)
     return tokenizer, model
@@ -142,7 +143,7 @@ if __name__ == "__main__":
         config_file = sys.argv[1]
     with open(config_file) as f:
         config = json.load(f)
-    run_neogpt(config)
+    run_neogpt(config, use_onnx=True)
     #run_neogpt({"model_name": "EleutherAI/gpt-neo-125M", "dataset_path": "data/prochoice.enriched.toxicity"})
     #run_neogpt({"model_name": "./onnx/", #"./results/checkpoint-13500/", 
     #        "tokenizer_name": "./onnx/", 

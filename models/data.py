@@ -89,17 +89,21 @@ class ChildFromParentWithToxicity(ChildFromParent):
     
     def target(self, row):
         return row['text_y']
+
+lookup = {
+    "ChildFromParent": ChildFromParent,
+    "ChildFromParentWithToxicity": ChildFromParentWithToxicity
+}
     
 def make_prochoice_enrichment():
     ds = attach_parents(load_df("data/prochoice.enriched.json"))
     cpt = ChildFromParentWithToxicity()
     cpt.as_dataset(ds).save_to_disk("data/prochoice.enriched.toxicity")
 
-def load_as_df(data="data/prochoice.enriched.json"):
+def load_as_df(data="data/prochoice.enriched.json", mod="ChildFromParentWithToxicity"):
     df = attach_parents(load_df(data))
-    cpt = ChildFromParentWithToxicity()
+    cpt = lookup.get(mod, SourceTarget)()
     train, test, val = cpt.split_dataset(df)
-    print(val.keys())
     train = train.progress_apply(lambda x: {'source_text': cpt.source(x), "target_text": cpt.target(x)}, axis="columns")
     test = test.progress_apply(lambda x: {'source_text': cpt.source(x), "target_text": cpt.target(x)}, axis="columns")
     val = val.progress_apply(lambda x: {'source_text': cpt.source(x), "target_text": cpt.target(x)}, axis="columns")
