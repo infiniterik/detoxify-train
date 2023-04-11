@@ -4,13 +4,10 @@ default:
 
 process-raw-data-prochoice:
   variables:
-    RAW_DATASET: "knoxcs/detoxify/prochoice.raw.json"
-    RAW_DATA: "prochoice.raw.json"
-    TRANSFORMED_DATA: "prochoice.transformed.json"
-    ENRICHED_DATA: "prochoice.enriched.json"
-    WANDB_DATASET_NAME: "knoxcs/detoxify/prochoice.enriched.json"
+    DATASET_CONFIG: dataset/prochoice.enriched.env
   image: ihmc-bose/data
   script:
+    - source $DATASET_CONFIG
     - wandb artifact get '$RAW_DATASET'
     - python scripts/transform_data.py process '$RAW_DATASET'/'$RAW_DATA' '$TRANSFORMED_DATA'
     - python scripts/batch_enrichment.py --use-gpu '$TRANSFORMED_DATA' '$ENRICHED_DATA'
