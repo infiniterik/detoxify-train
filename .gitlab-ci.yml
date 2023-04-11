@@ -8,6 +8,7 @@ process-raw-data-prochoice:
   image: ihmc-bose/data
   script:
     - source $DATASET_CONFIG
+    - mkdir data
     - wandb artifact get $WANDB_PROJECT/$RAW_DATASET
     - python scripts/transform_data.py process --is-lines ./artifacts/$RAW_DATASET/$RAW_DATA $TRANSFORMED_DATA
     - python scripts/batch_enrichment.py --use-gpu $TRANSFORMED_DATA $ENRICHED_DATA
