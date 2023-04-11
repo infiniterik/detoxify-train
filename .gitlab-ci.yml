@@ -1,6 +1,7 @@
-tags:
-  - gpu-test
-  
+default:
+  tags:
+    - gpu-test
+
 stages:
   - process-raw-data
 
