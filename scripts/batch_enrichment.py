@@ -63,8 +63,14 @@ import click
 @click.argument("filename")
 @click.argument("output")
 @click.option("--use-gpu", is_flag=True, default=False)
+@click.option("--use-wandb", default="")
 @click.option("-c", "--chunk-size", default=32)
-def enrich(filename, output, use_gpu, chunk_size):
+def enrich(filename, output, use_gpu, use_wandb, chunk_size):
+    if use_wandb:
+        import wandb
+        run = wandb.init()
+        dataset = run.use_artifact(use_wandb)
+        filename = dataset.download() + "/" + filename
     print("loading file")
     df = pd.read_json(filename)
     print(df)
