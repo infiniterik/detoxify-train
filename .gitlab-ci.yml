@@ -11,10 +11,10 @@ process-raw-data-prochoice:
     WANDB_DATASET_NAME: "knoxcs/detoxify/prochoice.enriched.json"
   image: ihmc-bose/data
   script:
-    - wandb artifact get '$RAW_DATASET'
-    - python scripts/transform_data.py process '$RAW_DATASET'/'$RAW_DATA' '$TRANSFORMED_DATA'
-    - python scripts/batch_enrichment.py --use-gpu '$TRANSFORMED_DATA' '$ENRICHED_DATA'
-    - wandb artifact put --type dataset --name '$WANDB_DATASET_NAME' '$ENRICHED_DATA'
+    - wandb artifact get $RAW_DATASET
+    - python scripts/transform_data.py process $RAW_DATASET/$RAW_DATA $TRANSFORMED_DATA
+    - python scripts/batch_enrichment.py --use-gpu $TRANSFORMED_DATA $ENRICHED_DATA
+    - wandb artifact put --type dataset --name $WANDB_DATASET_NAME $ENRICHED_DATA
 
 variables:
   GLOBAL_VAR: "A global variable"
