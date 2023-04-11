@@ -4,7 +4,7 @@ default:
 
 process-raw-data-prochoice:
   variables:
-    RAW_DATASET: "knoxcs/detoxify/prochoice.raw.json"
+    RAW_DATASET: "knoxcs/detoxify/prochoice.raw.json:v0"
     RAW_DATA: "prochoice.raw.json"
     TRANSFORMED_DATA: "prochoice.transformed.json"
     ENRICHED_DATA: "prochoice.enriched.json"
