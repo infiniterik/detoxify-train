@@ -15,3 +15,16 @@ process-raw-data-prochoice:
     - python scripts/transform_data.py process '$RAW_DATASET'/'$RAW_DATA' '$TRANSFORMED_DATA'
     - python scripts/batch_enrichment.py --use-gpu '$TRANSFORMED_DATA' '$ENRICHED_DATA'
     - wandb artifact put --type dataset --name '$WANDB_DATASET_NAME' '$ENRICHED_DATA'
+
+variables:
+  GLOBAL_VAR: "A global variable"
+
+job1:
+  variables:
+    JOB_VAR: "A job variable"
+  script:
+    - echo "Variables are '$GLOBAL_VAR' and '$JOB_VAR'"
+
+job2:
+  script:
+    - echo "Variables are '$GLOBAL_VAR' and '$JOB_VAR'"
