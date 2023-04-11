@@ -4,7 +4,7 @@ default:
 
 process-raw-data-prochoice:
   variables:
-    DATASET_CONFIG: dataset/prochoice.enriched.env
+    DATASET_CONFIG: configs/dataset/prochoice.enriched.env
   image: ihmc-bose/data
   script:
     - source $DATASET_CONFIG
