@@ -14,8 +14,8 @@ process-raw-data-prochoice:
   script:
     - wandb artifact get $WANDB_PROJECT/$RAW_DATASET
     - mkdir data
-    - python scripts/transform_data.py process ./artifacts/$RAW_DATASET/$RAW_DATA $TRANSFORMED_DATA
-    - python scripts/batch_enrichment.py --use-gpu data/$TRANSFORMED_DATA $ENRICHED_DATA
+    #- python scripts/transform_data.py process ./artifacts/$RAW_DATASET/$RAW_DATA $TRANSFORMED_DATA
+    - python scripts/batch_enrichment.py --use-gpu ./artifacts/$RAW_DATASET/$RAW_DATA $ENRICHED_DATA
     - wandb artifact put --type dataset --name $WANDB_DATASET_NAME $ENRICHED_DATA
 
 variables:
