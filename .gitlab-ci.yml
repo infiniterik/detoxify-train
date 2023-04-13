@@ -30,6 +30,7 @@ process-raw-data:
 
 add-stances:
   image: detection_app
+  timeout: 12h
   #rules:
   #  - when: manual
   script:
