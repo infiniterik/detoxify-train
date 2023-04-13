@@ -37,7 +37,7 @@ add-stances:
     - pip install wandb pandas tqdm
     - wandb artifact get $WANDB_PROJECT/$ENRICHED_DATA:v0
     - echo "acquired data"
-    - ls && ls artifacts && ls artifacts/ && ls ./artifacts/$WANDB_PROJECT/ && ls artifacts/$ENRICHED_DATA:v0/
+    - ls && ls artifacts && ls artifacts/ && ls ./artifacts/ && ls artifacts/$ENRICHED_DATA:v0/
     - python3.9 -c "import pandas; pandas.read_json('./artifacts/$ENRICHED_DATA:v0/$ENRICHED_DATA').to_csv('data.csv');"
     - echo "transformed data"
     - python3.9 -c "import detection_app; detection_app.csv_to_stances('abortion', 'data.csv', 'text', 'id', None, 'id', None, 0)"
