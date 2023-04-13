@@ -5,10 +5,10 @@ default:
 process-raw-data-prochoice:
   variables:
     DATASET_CONFIG: 
-      - value: configs/dataset/prochoice.enriched.env
+      - value: "configs/dataset/prochoice.enriched.env"
       - options:
-          configs/dataset/prochoice.enriched.env
-          configs/dataset/prolife.enriched.env
+          - "configs/dataset/prochoice.enriched.env"
+          - "configs/dataset/prolife.enriched.env"
   image: ihmc-bose/data
   rules:
     - when: manual
