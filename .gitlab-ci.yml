@@ -22,6 +22,7 @@ process-raw-data:
   stage: raw_data
   rules:
     - when: manual
+    - allow_failure: true
   script:
     - source $DATASET_CONFIG
     - mkdir data
