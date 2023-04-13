@@ -1,5 +1,5 @@
 {
-    "model_name": "../t5-large/", 
+    "model_name": "t5-large", 
     "dataset_path": "data/prochoice.enriched.toxicity",
     "save_as": ".my_model/",
     "output_dir": "./results",

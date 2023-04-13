@@ -8,8 +8,9 @@ variables:
     options:
         - "configs/dataset/prochoice.enriched.env"
         - "configs/dataset/prolife.enriched.env"
+    description: "Select the dataset you wish to use."
 
-process-raw-data-prochoice:
+process-raw-data:
   image: ihmc-bose/data
   rules:
     - when: manual
@@ -19,4 +20,20 @@ process-raw-data-prochoice:
     - wandb artifact get $WANDB_PROJECT/$RAW_DATASET
     - python scripts/transform_data.py process --is-lines ./artifacts/$RAW_DATASET/$RAW_DATA $TRANSFORMED_DATA
     - python scripts/batch_enrichment.py --use-gpu data/$TRANSFORMED_DATA $ENRICHED_DATA
-    - wandb artifact put --type dataset --name $WANDB_DATASET_NAME $ENRICHED_DATA
+    - wandb artifact put --type dataset --name $WANDB_PROJECT/$ENRICHED_DATA $ENRICHED_DATA
+
+add-stances:
+  image: detection_app
+  rules:
+    - when: manual
+  script:
+    - source $DATASET_CONFIG
+    - pip install wandb pandas tqdm
+    - wandb artifact get $WANDB_PROJECT/$ENRICHED_DATA:v0
+    - echo "acquired data"
+    - python -c "import pandas; pandas.read_json('./artifacts/$WANDB_PROJECT/$ENRICHED_DATA:v0/$ENRICHED_DATA').to_csv('data.csv');"
+    - echo "transformed data"
+    - python -c "import detection_app; detection_app.csv_to_stances('abortion', 'data.csv', 'text', 'id', None, 'id', None, 0)"
+    - echo "stances complete"
+    - mv ./user_provided_stance_output/user_provided_csv_stances.jsonl $STANCE_DATA
+    - wandb artifact put --type dataset --name $WANDB_PROJECT/$STANCE_DATA $STANCE_DATA
