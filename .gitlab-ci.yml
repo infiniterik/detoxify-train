@@ -2,9 +2,7 @@ default:
   tags:
     - gpu-test
 
-stages:
-  - raw_data
-  - stances
+
 #  - data_format
 #  - train
 #  - test
@@ -19,7 +17,6 @@ variables:
 
 process-raw-data:
   image: ihmc-bose/data
-  stage: raw_data
   rules:
     - when: manual
     - allow_failure: true
@@ -33,7 +30,6 @@ process-raw-data:
 
 add-stances:
   image: detection_app
-  stage: stances
   rules:
     - when: manual
   script:
