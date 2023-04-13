@@ -6,6 +6,8 @@ process-raw-data-prochoice:
   variables:
     DATASET_CONFIG: configs/dataset/prochoice.enriched.env
   image: ihmc-bose/data
+  rules:
+    - when: manual
   script:
     - source $DATASET_CONFIG
     - mkdir data
