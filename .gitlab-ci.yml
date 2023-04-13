@@ -40,7 +40,7 @@ add-stances:
     - echo "acquired data"
     - python3.9 -c "import pandas; pandas.read_json('./artifacts/$ENRICHED_DATA:v0/$ENRICHED_DATA').to_csv('data.csv');"
     - echo "transformed data"
-    - python3.9 -c "import detection_app; detection_app.csv_to_stances('abortion', 'data.csv', 'text', 'id', None, 'id', "", 0)"
+    - python3.9 -c "import detection_app; detection_app.csv_to_stances('abortion', 'data.csv', 'text', 'id', None, 'id', '', 0)"
     - echo "stances complete"
     - mv ./user_provided_stance_output/user_provided_csv_stances.jsonl $STANCE_DATA
     - wandb artifact put --type dataset --name $WANDB_PROJECT/$STANCE_DATA $STANCE_DATA
