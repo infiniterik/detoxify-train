@@ -30,8 +30,8 @@ process-raw-data:
 
 add-stances:
   image: detection_app
-  #rules:
-  #  - when: manual
+  rules:
+    - when: manual
   script:
     - source $DATASET_CONFIG
     - cd /app
@@ -46,4 +46,8 @@ add-stances:
     - echo "stances complete"
     - mv ./user_provided_stance_output/user_provided_csv_stances.jsonl $STANCE_DATA
     - wandb artifact put --type dataset --name $WANDB_PROJECT/$STANCE_DATA $STANCE_DATA
-
+#
+add-stances:
+  image: cuda_12.1
+  rules:
+    - when: manual

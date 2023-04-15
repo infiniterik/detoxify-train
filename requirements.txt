@@ -11,3 +11,4 @@ wandb
 click
 spacy
 optimum[onnxruntime]
+git+https://github.com/knoxml/simplet5

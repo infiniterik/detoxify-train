@@ -13,3 +13,4 @@ __pycache__/
 results/
 my_model/
 onnx/
+artifacts/
