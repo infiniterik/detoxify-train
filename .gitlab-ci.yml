@@ -37,8 +37,6 @@ add-stances:
     - source $DATASET_CONFIG
     - cd /app
     - pip install wandb pandas tqdm
-    # https://arnon.dk/matching-sm-architectures-arch-and-gencode-for-various-nvidia-cards/
-    #- pip install --upgrade torch
     - wandb artifact get $WANDB_PROJECT/$ENRICHED_DATA:v0
     - echo "acquired data"
     - python3.9 -c "import pandas; pandas.read_json('./artifacts/$ENRICHED_DATA:v0/$ENRICHED_DATA').to_csv('data.csv');"
@@ -48,7 +46,24 @@ add-stances:
     - mv ./user_provided_stance_output/user_provided_csv_stances.jsonl $STANCE_DATA
     - wandb artifact put --type dataset --name $WANDB_PROJECT/$STANCE_DATA $STANCE_DATA
 #
-add-stances:
+add-summarize:
   image: cuda_12.1
   rules:
     - when: manual
+  # data, output, model="jordiclive/flan-t5-11b-summarizer-filtered", prompt="Produce a short summary of the following social media post:
+  script: python -c "from scripts import run; run($WANDB_PROJECT, $STANCE_DATA, $SUMMARIZED_DATA)"
+
+build-t5-dataset:
+  image: cuda_12.1
+  rules:
+    - when: manual
+  script:
+    - python -c "import runt5; runt5.build_t5_dataset($T5DATA)"
+
+train-t5:
+  image: cuda_12.1
+  rules:
+    - when: manual
+  script:
+    - python -c "import runt5; train_t5.run_t5($T5RUN)"
+    

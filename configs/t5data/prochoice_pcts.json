@@ -1,0 +1,15 @@
+{
+    "version": "v0",
+    "target": "prochoice_PCTS",
+    "description": "Prochoice dataset with parent child toxicity summary",
+    "wandb-project": "knoxcs/detoxify",
+    "base-dataset": "prochoice.enriched.toxicity.json",
+    "dataset": {
+        "path": "./artifacts/detoxify/prochoice.enriched.toxicity.json:v0/prochoice.summarized.json",
+        "preprocess": "get_parent_child_toxic_summary"
+    },
+    "split": {
+        "train": 0.5,
+        "eval": 0.2
+    }
+}
