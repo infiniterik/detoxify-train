@@ -64,15 +64,12 @@ def build_t5_dataset(config):
     artifact.add_file("eval.json")
     wandb_logger.log_artifact(artifact)
     
+from pytorch_lightning.loggers import WandbLogger
 # def train(train_df, eval_df, prototype="t5", base_model="t5-large", output_dir="outputs", logger="default"):
 def train_t5(config):
     config = json.load(open(config))
     entity, project = config["wandb-project"].split("/")
-    wandb_logger = wandb.init(project=project, 
-                              entity=entity,
-                              name=config["name"],
-                              config=config, tags=["model", config["prototype"], config["base_model"]]
-                              )
+    wandb_logger = WandbLogger(name=config["name"], log_model=True, project=project, entity=entity, config=config, tags=["model", config["prototype"], config["base_model"]])
     dataset = wandb.use_artifact(config["wandb-project"] + "/" + config["dataset"])
     dataset = dataset.download()
     train = pd.read_json(dataset+"/train.json")
@@ -84,9 +81,6 @@ def train_t5(config):
                 base_model=config["base_model"], 
                 logger=wandb_logger,
                 args=config.get("args", {}))
-    artifact = wandb.Artifact(config["name"], type="model")
-    artifact.add_dir(config["args"]["output_dir"]+"_model")
-    wandb_logger.log_artifact(artifact)
 
 """
 {
