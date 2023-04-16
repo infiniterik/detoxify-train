@@ -27,6 +27,7 @@ import wandb, json
 from templates.templates import process_data
 from sklearn.model_selection import train_test_split
 import pandas as pd
+from models import sicon
 
 def get_dataset(config):
     ds = wandb.use_artifact(config["base-dataset"], type="dataset")
