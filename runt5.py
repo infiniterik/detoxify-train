@@ -98,3 +98,8 @@ def train_t5(config):
     }
 }
 """
+
+if __name__ == "__main__":
+    r = os.environ["T5RUN"]
+    runt5.train_t5(r)
+    

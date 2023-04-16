@@ -71,5 +71,6 @@ train-t5:
     - when: manual
   script:
     - pip install git+https://github.com/knoxml/simplet5
-    - python -c "import runt5; runt5.train_t5('$T5RUN')"
+    - python runt5
+    #- python -c "import runt5; runt5.train_t5('$T5RUN')"
     
