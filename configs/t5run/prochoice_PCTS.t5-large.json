@@ -1,5 +1,6 @@
 {
     "dataset": "prochoice_PCTS:v0",
+    "name": "prochoice.PCTS.t5-large",
     "wandb-project": "knoxcs/detoxify",
     "prototype": "t5",
     "base_model": "t5-large",
