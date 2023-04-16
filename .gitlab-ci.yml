@@ -60,7 +60,7 @@ build-t5-dataset:
   rules:
     - when: manual
   script:
-    - python -c "import runt5; runt5.build_t5_dataset($T5DATA)"
+    - python -c "import runt5; runt5.build_t5_dataset('$T5DATA')"
 
 train-t5:
   image: cuda_12.1
