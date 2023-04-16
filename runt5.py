@@ -78,8 +78,6 @@ def train_t5(config):
                 eval_df, 
                 config["prototype"], 
                 config["base_model"], 
-                config["output_dir"], 
-                config["epochs"], 
                 wandb_logger,
                 config.get("args", {}))
     wandb_logger.save("outputs/*")

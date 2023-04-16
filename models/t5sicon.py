@@ -3,7 +3,7 @@ import torch
 
 torch.set_float32_matmul_precision('medium')
 
-def train(train_df, eval_df, prototype="t5", base_model="t5-large", output_dir="outputs", logger="default",
+def train(train_df, eval_df, prototype="t5", base_model="t5-large", logger="default",
           args={}):
     # instantiate
     model = SimpleT5()
@@ -24,6 +24,6 @@ def train(train_df, eval_df, prototype="t5", base_model="t5-large", output_dir="
                 logger=logger
     )
 
-    model.model.save_pretrained(output_dir)
-    model.tokenizer.save_pretrained(output_dir)
+    model.model.save_pretrained(args.get("output_dir", "outputs"))
+    model.tokenizer.save_pretrained(args.get("output_dir", "outputs"))
 
