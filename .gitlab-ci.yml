@@ -69,5 +69,5 @@ train-t5:
   rules:
     - when: manual
   script:
-    - python -c "import runt5; train_t5.run_t5($T5RUN)"
+    - python -c "import runt5; train_t5.run_t5('$T5RUN')"
     
