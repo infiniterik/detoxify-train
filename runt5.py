@@ -27,7 +27,7 @@ import wandb, json
 from templates.templates import process_data
 from sklearn.model_selection import train_test_split
 import pandas as pd
-from models import sicon
+from models import t5sicon
 
 def get_dataset(config):
     ds = wandb.use_artifact(config["base-dataset"], type="dataset")
@@ -73,7 +73,8 @@ def train_t5(config):
     dataset = dataset.download()
     train = pd.read_json(dataset+"/train.json")
     eval = pd.read_json(dataset+"/eval.json")
-    sicon.train(train, 
+    print("starting training")
+    t5sicon.train(train, 
                 evaldf, 
                 config["prototype"], 
                 config["base_model"], 
