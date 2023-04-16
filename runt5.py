@@ -70,12 +70,12 @@ def train_t5(config):
     config = json.load(open(config))
     entity, project = config["wandb-project"].split("/")
 
-    wandb.init(project=project, entity=entity, group="hyperion")
+    experiment = wandb.init(project=project, entity=entity, group="hyperion")
     dataset = wandb.use_artifact(config["wandb-project"] + "/" + config["dataset"])
     dataset = dataset.download()
     train = pd.read_json(dataset+"/train.json")
     eval_df = pd.read_json(dataset+"/eval.json")
-    wandb_logger = WandbLogger(name=config["name"], log_model=True, project=project, entity=entity, config=config, tags=["model", config["prototype"], config["base_model"]])
+    wandb_logger = WandbLogger(name=config["name"], experiment=experiment, log_model=True, project=project, entity=entity, config=config, group="hyperion", tags=["model", config["prototype"], config["base_model"]])
     print("starting training")
     t5sicon.train(train, 
                 eval_df, 
