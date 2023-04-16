@@ -65,6 +65,7 @@ def build_t5_dataset(config):
 # def train(train_df, eval_df, prototype="t5", base_model="t5-large", output_dir="outputs", logger="default"):
 def train_t5(config):
     config = json.load(open(config))
+    entity, project = config["wandb-project"].split("/")
     wandb_logger = wandb.init(project=project, entity=entity, config=config)
     dataset = wandb.use_artifact(config["project"] + "/" + config["dataset"])
     entity, project = config["wandb-project"].split("/")
