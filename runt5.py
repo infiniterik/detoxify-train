@@ -72,10 +72,10 @@ def train_t5(config):
     dataset = wandb.use_artifact(config["wandb-project"] + "/" + config["dataset"])
     dataset = dataset.download()
     train = pd.read_json(dataset+"/train.json")
-    eval = pd.read_json(dataset+"/eval.json")
+    eval_df = pd.read_json(dataset+"/eval.json")
     print("starting training")
     t5sicon.train(train, 
-                evaldf, 
+                eval_df, 
                 config["prototype"], 
                 config["base_model"], 
                 config["output_dir"], 
