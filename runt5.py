@@ -70,7 +70,7 @@ def train_t5(config):
     config = json.load(open(config))
     entity, project = config["wandb-project"].split("/")
 
-    wandb.init(project=project, entity=entity)
+    wandb.init(project=project, entity=entity, group="hyperion")
     dataset = wandb.use_artifact(config["wandb-project"] + "/" + config["dataset"])
     dataset = dataset.download()
     train = pd.read_json(dataset+"/train.json")
