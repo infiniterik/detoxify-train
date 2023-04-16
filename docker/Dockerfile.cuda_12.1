@@ -1,6 +1,4 @@
-# Use nvidia/cuda image
 FROM nvidia/cuda:12.1.0-runtime-ubuntu20.04
-CMD nvidia-smi
 
 # Ignore interactive questions during `docker build`
 ENV DEBIAN_FRONTEND noninteractive
@@ -8,11 +6,6 @@ ENV DEBIAN_FRONTEND noninteractive
 # Bash shell
 RUN chsh -s /bin/bash
 SHELL ["/bin/bash", "-c"]
-
-# Versions
-#ARG TORCH_CUDA_VERSION=cu116
-#ARG TORCH_VERSION=1.13.1
-#ARG TORCHVISION_VERSION=0.14.1
 
 # Install and update tools to minimize security vulnerabilities
 RUN apt-get update
@@ -57,6 +50,7 @@ WORKDIR /home
 #RUN pip install -r requirements.txt
 ENV WANDB_API_KEY=112ecceb19501df3ee5000fd55661456501701c4
 
-COPY . .
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
 CMD ["/bin/bash"]

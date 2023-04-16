@@ -63,7 +63,7 @@ build-t5-dataset:
     - python -c "import runt5; runt5.build_t5_dataset('$T5DATA')"
 
 train-t5:
-  image: cuda_12.1
+  image: ihmc-bose/data
   timeout: 12h
   variables:
     T5RUN: configs/t5run/prochoice_PCTS.t5-large.json
