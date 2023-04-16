@@ -50,6 +50,7 @@ def load_split(config):
     return train, eval_df, test
 
 def build_t5_dataset(config):
+    print("running config:", config)
     config = json.load(open(config))
     entity, project = config["wandb-project"].split("/")
     wandb_logger = wandb.init(project=project, entity=entity, config=config)
