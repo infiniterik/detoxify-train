@@ -102,5 +102,5 @@ def train_t5(config):
 if __name__ == "__main__":
     import os
     r = os.environ["T5RUN"]
-    runt5.train_t5(r)
+    train_t5(r)
     
