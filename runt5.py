@@ -84,7 +84,7 @@ def train_t5(config):
                 base_model=config["base_model"], 
                 logger=wandb_logger,
                 args=config.get("args", {}))
-    artifact = wandb.Artifact(name, "model")
+    artifact = wandb.Artifact(config["name"], type="model")
     artifact.save_dir(config["args"]["output_dir"]+"_model")
     wandb_logger.log_artifact(artifact)
 
