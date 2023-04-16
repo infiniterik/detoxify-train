@@ -11,24 +11,26 @@
     "target": "prochoice_PCTS",
     "description": "Prochoice dataset with parent child toxicity summary",
     "wandb-project": "knoxcs/detoxify",
-    "base-dataset": "prochoice.enriched.toxicity.json",
+    "base-dataset": "prochoice.summarized.json:v0",
     "dataset": {
-        "path": "./artifacts/detoxify/prochoice.enriched.toxicity.json:v0/prochoice.summarized.json",
+        "path": "./artifacts/detoxify/prochoice.summarized.json:v0/prochoice.summarized.json",
         "preprocess": "get_parent_child_toxic_summary"
     },
     "split": {
         "train": 0.5,
-        "eval": 0.2,
+        "eval": 0.2
     }
 }
 """
 
-import wandb
-from templates import process_template
+import wandb, json
+from templates.templates import process_data
+from sklearn.model_selection import train_test_split
 
 def get_dataset(config):
-    ds = wandb.use_artifact(config["base"], type="dataset")
-    return process_template(config["dataset"])
+    ds = wandb.use_artifact(config["base-dataset"], type="dataset")
+    ds.download()
+    return process_data(config["dataset"])
 
 def split_dataset(config, ds):
     train_frac = config["split"]["train"]
@@ -36,7 +38,7 @@ def split_dataset(config, ds):
     eval_frac = config["split"]["eval"]
     eval_frac = eval_frac/(1-train_frac)
     eval_df, test = train_test_split(test, train_size=eval_frac, random_state=42, shuffle=True)
-    name = config[target]+".{}.json"
+    name = "{}.json"
     train.to_json(name.format("train"))
     eval_df.to_json(name.format("eval"))
     test.to_json(name.format("test"))
@@ -49,7 +51,8 @@ def load_split(config):
 
 def build_t5_dataset(config):
     config = json.load(open(config))
-    wandb_logger = wandb.init(project=config["wandb-project"], config=config)
+    entity, project = config["wandb-project"].split("/")
+    wandb_logger = wandb.init(project=project, entity=entity, config=config)
     ds = get_dataset(config)
     split_dataset(config, ds)
     artifact = wandb.Artifact(config["target"], type="dataset", description=config["description"])
@@ -62,9 +65,10 @@ def build_t5_dataset(config):
 def run_t5(config):
     config = json.load(open(config))
     dataset = wandb.use_artifact(config["project"] + "/" + config["dataset"])
-    wandb_logger = wandb.init(project=config["wandb-project"], config=config)
-    train = pd.read_json(dataset"/train.json")
-    eval = pd.read_json(dataset"/eval.json")
+    entity, project = config["wandb-project"].split("/")
+    wandb_logger = wandb.init(project=project, entity=entity, config=config)
+    train = pd.read_json(dataset+"/train.json")
+    eval = pd.read_json(dataset+"/eval.json")
     sicon.train(train, 
                 evaldf, 
                 config["prototype"], 

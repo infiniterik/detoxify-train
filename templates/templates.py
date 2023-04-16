@@ -114,7 +114,7 @@ def get_parent_child_toxic_summary(df, parent_column="text_x",
                           summary_column="summary",
                           enrichments_column="enrichments",
                           parent_prefix="Post summary: {}\n A {} post: ",
-                          child_prefix="Post reply: {}\n A {} reply:"):
+                          child_prefix="Reply summary: {}\n A {} reply:"):
     """Transforms a dataframe into a parent child format dataframe. 
     Resulting columns should be named source_text and target_text.
     """
