@@ -56,7 +56,7 @@ add-summarize:
 build-t5-dataset:
   image: cuda_12.1
   variables:
-    T5DATA: configs/t5run/prochoice_PCTS.t5-large.json
+    T5DATA: configs/t5data/prochoice_pcts.json
   rules:
     - when: manual
   script:
@@ -64,6 +64,8 @@ build-t5-dataset:
 
 train-t5:
   image: cuda_12.1
+  variables:
+    T5RUN: configs/t5run/prochoice_PCTS.t5-large.json
   rules:
     - when: manual
   script:
