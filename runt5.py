@@ -63,11 +63,11 @@ def build_t5_dataset(config):
     wandb_logger.log_artifact(artifact)
     
 # def train(train_df, eval_df, prototype="t5", base_model="t5-large", output_dir="outputs", logger="default"):
-def run_t5(config):
+def train_t5(config):
     config = json.load(open(config))
+    wandb_logger = wandb.init(project=project, entity=entity, config=config)
     dataset = wandb.use_artifact(config["project"] + "/" + config["dataset"])
     entity, project = config["wandb-project"].split("/")
-    wandb_logger = wandb.init(project=project, entity=entity, config=config)
     train = pd.read_json(dataset+"/train.json")
     eval = pd.read_json(dataset+"/eval.json")
     sicon.train(train, 
@@ -78,6 +78,7 @@ def run_t5(config):
                 config["epochs"], 
                 wandb_logger,
                 config.get("args", {}))
+    wandb_logger.save("outputs/*")
 
 """
 {
