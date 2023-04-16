@@ -64,10 +64,12 @@ build-t5-dataset:
 
 train-t5:
   image: cuda_12.1
+  timeout: 12h
   variables:
     T5RUN: configs/t5run/prochoice_PCTS.t5-large.json
   rules:
     - when: manual
   script:
+    - pip install git+https://github.com/knoxml/simplet5
     - python -c "import runt5; runt5.train_t5('$T5RUN')"
     
