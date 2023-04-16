@@ -21,7 +21,7 @@ def train(train_df, eval_df, prototype="t5", base_model="t5-large", logger="defa
                 early_stopping_patience_epochs = 0,
                 precision = 16,
                 dataloader_num_workers=32,
-                logger=logger
+                #logger=logger
     )
 
     model.model.save_pretrained(args.get("output_dir", "outputs"))
