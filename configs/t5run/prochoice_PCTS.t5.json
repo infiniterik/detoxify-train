@@ -3,7 +3,7 @@
     "name": "prochoice.PCTS.t5",
     "wandb-project": "knoxcs/detoxify",
     "prototype": "t5",
-    "base_model": "t5",
+    "base_model": "t5-small",
     "args": {
         "source_max_token_len": 512,
         "target_max_token_len": 512,
