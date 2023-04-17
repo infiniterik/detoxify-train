@@ -75,7 +75,7 @@ def train_t5(config):
     dataset = dataset.download()
     train = pd.read_json(dataset+"/train.json")
     eval_df = pd.read_json(dataset+"/eval.json")
-    wandb_logger = WandbLogger(name=config["name"], experiment=experiment, log_model=True, project=project, entity=entity, config=config, group="hyperion", tags=["model", config["prototype"], config["base_model"]])
+    wandb_logger = WandbLogger(name=config["name"], experiment=experiment, log_model=False, project=project, entity=entity, config=config, group="hyperion", tags=["model", config["prototype"], config["base_model"]])
     print("starting training")
     t5sicon.train(train, 
                 eval_df, 
@@ -83,6 +83,9 @@ def train_t5(config):
                 base_model=config["base_model"], 
                 logger=wandb_logger,
                 args=config.get("args", {}))
+    artifact = wandb.Artifact(config["name"], type="model")
+    artifact.add_dir(config["args"]["output_dir"]+"_model")
+    experiment.log_artifact(artifact)
 
 """
 {

@@ -24,3 +24,7 @@ def train(train_df, eval_df, prototype="t5", base_model="t5-large", logger="defa
                 save_only_last_epoch= args.get("save_only_last_epoch", True),
                 logger=logger
     )
+
+    model.model.save_pretrained(args.get("output_dir", "outputs")+"_model")
+    model.tokenizer.save_pretrained(args.get("output_dir", "outputs")+"_model")
+
