@@ -1,0 +1,15 @@
+{
+    "dataset": "prochoice_PCTS:v0",
+    "name": "prochoice.PCTS.t5",
+    "wandb-project": "knoxcs/detoxify",
+    "prototype": "t5",
+    "base_model": "t5",
+    "args": {
+        "source_max_token_len": 512,
+        "target_max_token_len": 512,
+        "batch_size": 8,
+        "max_epochs": 5,
+        "use_gpu": 3,
+        "output_dir": "outputs"
+    }
+}
