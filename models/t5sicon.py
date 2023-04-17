@@ -1,7 +1,7 @@
 from simplet5 import SimpleT5
 import torch
 
-torch.set_float32_matmul_precision('medium')
+#torch.set_float32_matmul_precision('medium')
 
 def train(train_df, eval_df, prototype="t5", base_model="t5-large", logger="default",
           args={}):
@@ -19,7 +19,7 @@ def train(train_df, eval_df, prototype="t5", base_model="t5-large", logger="defa
                 use_gpu = args.get("use_gpu", 3),
                 outputdir = args.get("output_dir", "outputs"),
                 early_stopping_patience_epochs = args.get("early_stopping_patience_epochs", 3),
-                precision = args.get("precision", 16),
+                precision = args.get("precision", 64),
                 dataloader_num_workers= args.get("dataloader_num_workers", 0),
                 save_only_last_epoch= args.get("save_only_last_epoch", True),
                 logger=logger
