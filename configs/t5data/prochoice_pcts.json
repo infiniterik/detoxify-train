@@ -1,6 +1,6 @@
 {
     "version": "v0",
-    "target": "prochoice_PCTS",
+    "target": "prochoice.sicon.PCTS",
     "description": "Prochoice dataset with parent child toxicity summary",
     "wandb-project": "knoxcs/detoxify",
     "base-dataset": "sicon",
