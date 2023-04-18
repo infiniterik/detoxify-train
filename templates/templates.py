@@ -149,6 +149,7 @@ def get_parent_child_toxic_summary(df, parent_column="text_x",
 
 def process_data(config):
     res = {}
+    import json
     json.dumps(config, indent=4)
     for split in ["train", "eval", "test"]:
         load_data(f'artifacts/{config["base-dataset"]}:{config["base-version"]}/{split}.json')
