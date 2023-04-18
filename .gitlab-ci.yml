@@ -65,6 +65,7 @@ generate-data-split:
     - pip install git+https://github.com/knoxml/simplet5 protobuf==3.20.*
     - source $DATASET_CONFIG
     - wandb artifact get $WANDB_PROJECT/$ENRICHED_DATA
+    - rm -rf split && mkdir split
     - python -c "import runt5; runt5.create_split('artifacts/$ENRICHED_DATA:v0/$ENRICHED_DATA', $TRAIN_SPLIT, $EVAL_SPLIT)"
     - wandb artifact put --type dataset --name $WANDB_PROJECT/$SPLIT_NAME train.json eval.json test.json
 
