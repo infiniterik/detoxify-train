@@ -148,8 +148,11 @@ def get_parent_child_toxic_summary(df, parent_column="text_x",
     return get_simplet5_format(df, parent_column, child_column)
 
 def process_data(config):
-    data = load_data(config["path"])
-    fn = config.get("preprocess", "get_parent_child")
-    args = {k: v for k, v in config.get("args", {}).items()}
-    args["df"] = data
-    return apply_function(fn, args)
+    res = {}
+    for split in ["train", "eval", "test"]:
+        load_data(f'artifacts/{config["base-dataset"]}:{config['base-version']}/')
+        fn = config.get("preprocess", "get_parent_child")
+        args = {k: v for k, v in config.get("args", {}).items()}
+        args["df"] = data
+        res[split] = apply_function(fn, args)
+    return res
