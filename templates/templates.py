@@ -45,10 +45,10 @@ def indicator_level(confidence, switch=False):
     return (confidence > 0.5 and not switch) or (confidence <= 0.5 and switch)
 
 def indicator_to_text(confidence, switch=False):
-    return indicator_level(confidence, switch): "high-toxicity" ? "low toxicity"
+    return indicator_level(confidence, switch) ? "high-toxicity" : "low toxicity"
 
 def contains_indicator(confidence, switch=False):
-    return indicator_level(confidence, switch): "contains" ? "does not contain"
+    return indicator_level(confidence, switch)? "contains" : "does not contain"
 
 def enrichment_to_register(enrichment, keys=["toxicity", "identity_attack", "insult", "threat", "severe_toxicity"], switch=[]):
     """Transforms an enrichment dictionary into a register dictionary"""
