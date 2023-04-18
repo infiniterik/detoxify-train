@@ -36,8 +36,13 @@ def get_dataset(config):
 
 def split_dataset(config, ds):
     train_frac = config["split"]["train"]
-    train, test = train_test_split(ds, train_size=train_frac, random_state=42, shuffle=True)
     eval_frac = config["split"]["eval"]
+    create_split(train_frac, eval_frac, ds)
+
+def create_split(train_fac, eval_frac, ds):
+    if type(ds) == str:
+        ds = pd.read_json(ds)
+    train, test = train_test_split(ds, train_size=train_frac, random_state=42, shuffle=True)
     eval_frac = eval_frac/(1-train_frac)
     eval_df, test = train_test_split(test, train_size=eval_frac, random_state=42, shuffle=True)
     name = "{}.json"

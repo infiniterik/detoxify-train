@@ -16,6 +16,7 @@ variables:
     description: "Select the dataset you wish to use."
 
 process-raw-data:
+  description: Take raw data and clean it up. Add enrichments perform anonymization
   image: ihmc-bose/data
   rules:
     - when: manual
@@ -29,6 +30,7 @@ process-raw-data:
     - wandb artifact put --type dataset --name $WANDB_PROJECT/$ENRICHED_DATA $ENRICHED_DATA
 
 add-stances:
+  description: Get stances from enriched data. Result is stored in a separate json file
   image: detection_app
   rules:
     - when: manual
@@ -47,11 +49,23 @@ add-stances:
     - wandb artifact put --type dataset --name $WANDB_PROJECT/$STANCE_DATA $STANCE_DATA
 #
 add-summarize:
+  description: add summaries to cleaned data
   image: cuda_12.1
   rules:
     - when: manual
   # data, output, model="jordiclive/flan-t5-11b-summarizer-filtered", prompt="Produce a short summary of the following social media post:
   script: python -c "from scripts import run; run($WANDB_PROJECT, $STANCE_DATA, $SUMMARIZED_DATA)"
+
+generate-data-split:
+  description: Split the data for a set of experiments. Take the summarized data and split
+  image: cuda_12.1
+  rules:
+    - when: manual
+  script: 
+    - wandb artifact get $WANDB_PROJECT/$STANCE_DATA
+    - python -c "import runt5; runt5.split_data('artifacts/$WANDB_PROJECT/$STANCE_DATA/$STANCE_DATA', $TRAIN_SPLIT, $EVAL_SPLIT)"
+    - wandb artifact put --type dataset --name $WANDB_PROJECT/$SPLIT_NAME train.json eval.json test.json
+
 
 build-t5-dataset:
   image: cuda_12.1

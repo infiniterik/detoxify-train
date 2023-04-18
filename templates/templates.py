@@ -41,15 +41,21 @@ def load_data(path):
 def attach_parents(df):
     return df.merge(df, left_on='id', right_on='parent_id')
 
+def indicator_level(confidence, switch=False):
+    return (confidence > 0.5 and not switch) or (confidence <= 0.5 and switch)
+
 def indicator_to_text(confidence, switch=False):
-    if confidence > 0.5:
-        if switch:
-            return "high toxicity"
-        return "low toxicity"
-    else:
-        if switch:
-            return "low toxicity"
-        return "high toxicity"
+    return indicator_level(confidence, switch): "high-toxicity" ? "low toxicity"
+
+def contains_indicator(confidence, switch=False):
+    return indicator_level(confidence, switch): "contains" ? "does not contain"
+
+def enrichment_to_register(enrichment, keys=["toxicity", "identity_attack", "insult", "threat", "severe_toxicity"], switch=[]):
+    """Transforms an enrichment dictionary into a register dictionary"""
+    register = {}
+    for key in keys:
+        register["key"] = contains_indicator(enrichment[key], key in switch)
+    return "\n".join(["{}: {}".format(k, register[k]) for k in keys])
 
 def get_simplet5_format(df :  pd.DataFrame, source : str, target : str) -> pd.DataFrame:
     """Transforms a dataframe into a simplet5 format dataframe. Resulting columns should be named source_text and target_text."""
@@ -91,8 +97,8 @@ def get_parent_child_toxicity(df, parent_column='text_x', child_column='text_y',
 def get_parent_child_summary(df, parent_column="text_x",
                           child_column="text_y",
                           summary_column="summary",
-                          parent_prefix="Post summary: {} post: ",
-                          child_prefix="Post reply: {} reply:"):
+                          parent_prefix="Post summary: {}\npost: ",
+                          child_prefix="Post reply: {}\nreply:"):
     """Transforms a dataframe into a parent child format dataframe. 
     Resulting columns should be named source_text and target_text.
     """
@@ -107,6 +113,14 @@ def get_parent_child_summary(df, parent_column="text_x",
     df[parent_column] = df.progress_apply(parent, axis=1, result_type="reduce")
     # drop and rename
     return get_simplet5_format(df, parent_column, child_column)
+
+@register_function
+def get_post_toxic_summary(df, text_column="text", summary_column="summary", enrichments_column="enrichments", prefix="Post summary: {}\nA {} post: "):
+    """Transforms a dataframe into a simplet5 format dataframe with post summary+toxicity. Resulting columns should be named source_text and target_text."""
+    df = df.copy()
+    df[enrichments_column] = df[enrichments_column].apply(lambda x: indicator_to_text(x.get("toxicity")))
+    df["source_text"] = df.apply(lambda x: prefix.format(x[summary_column], x[enrichments_column]), axis=1, result_type="reduce")
+    return get_simplet5_format(df, "source_text", text_column)
 
 @register_function
 def get_parent_child_toxic_summary(df, parent_column="text_x",
