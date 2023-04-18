@@ -32,7 +32,7 @@ from models import t5sicon
 def get_dataset(config):
     ds = wandb.use_artifact(f'{config["wandb-project"]}/{config["base-dataset"]}:{config["base-version"]}', type="dataset")
     ds.download()
-    return process_data(config["dataset"])
+    return process_data(config)
 
 def split_dataset(config, ds):
     train_frac = config["split"]["train"]
@@ -61,6 +61,7 @@ def build_t5_dataset(config):
     config = json.load(open(config))
     entity, project = config["wandb-project"].split("/")
     wandb_logger = wandb.init(project=project, entity=entity, config=config)
+    print(json.dumps(config))
     ds = get_dataset(config)
     for k, v in ds.items():
         v.to_json(f'{k}.json')

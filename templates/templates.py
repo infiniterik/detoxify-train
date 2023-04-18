@@ -153,7 +153,7 @@ def process_data(config):
     print(json.dumps(config, indent=4))
     for split in ["train", "eval", "test"]:
         load_data(f'artifacts/{config["base-dataset"]}:{config["base-version"]}/{split}.json')
-        fn = config.get("preprocess", "get_parent_child")
+        fn = config["dataset"].get("preprocess", "get_parent_child")
         args = {k: v for k, v in config.get("args", {}).items()}
         args["df"] = data
         res[split] = apply_function(fn, args)
