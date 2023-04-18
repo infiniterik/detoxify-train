@@ -46,9 +46,9 @@ def create_split(ds, train_frac, eval_frac):
     eval_frac = eval_frac/(1-train_frac)
     eval_df, test = train_test_split(test, train_size=eval_frac, random_state=42, shuffle=True)
     name = "{}.json"
-    train.to_json(name.format("train"))
-    eval_df.to_json(name.format("eval"))
-    test.to_json(name.format("test"))
+    train.to_json("split/" + name.format("train"))
+    eval_df.to_json("split/" + name.format("eval"))
+    test.to_json("split/" + name.format("test"))
 
 def load_split(config):
     train = pd.read_json("train.json")
