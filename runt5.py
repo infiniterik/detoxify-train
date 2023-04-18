@@ -39,7 +39,7 @@ def split_dataset(config, ds):
     eval_frac = config["split"]["eval"]
     create_split(train_frac, eval_frac, ds)
 
-def create_split(train_frac, eval_frac, ds):
+def create_split(ds, train_frac, eval_frac):
     if type(ds) == str:
         ds = pd.read_json(ds)
     train, test = train_test_split(ds, train_size=train_frac, random_state=42, shuffle=True)
