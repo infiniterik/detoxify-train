@@ -30,7 +30,7 @@ import pandas as pd
 from models import t5sicon
 
 def get_dataset(config):
-    ds = wandb.use_artifact(config["wandb-project"]+"/"+config["base-dataset"], type="dataset")
+    ds = wandb.use_artifact(f'{config["wandb-project"]}/{config["base-dataset"]}:{config["base-version"]}', type="dataset")
     ds.download()
     return process_data(config["dataset"])
 
