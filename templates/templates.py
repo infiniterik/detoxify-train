@@ -156,6 +156,6 @@ def process_data(config):
         df = load_data(f'artifacts/{config["base-dataset"]}:{config["base-version"]}/{split}.json')
         fn = dcon.get("preprocess", "get_parent_child")
         args = {k: v for k, v in dcon.get("args", {}).items()}
-        args["df"] = data
+        args["df"] = df
         res[split] = apply_function(fn, args)
     return res
