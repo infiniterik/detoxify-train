@@ -14,6 +14,22 @@ variables:
         - "configs/dataset/prochoice.enriched.env"
         - "configs/dataset/prolife.enriched.env"
     description: "Select the dataset you wish to use."
+  T5DATA: 
+    value: "configs/t5data/prochoice_pcts.json"
+    options:
+      - "configs/t5data/prochoice_pcts.json"
+      - "configs/t5data/prochoice_pc.json"
+      - "configs/t5data/prochoice_pts.json"
+      - "configs/t5data/prochoice_pct.json"
+      - "configs/t5data/prochoice_pcs.json"
+  T5RUN: 
+    value: "configs/t5run/prochoice_pcts.json"
+    options:
+      - "configs/t5run/prochoice_pcts.t5-large.json"
+      - "configs/t5run/prochoice_pc.t5-large.json"
+      - "configs/t5run/prochoice_pts.t5-large.json"
+      - "configs/t5run/prochoice_pct.t5-large.json"
+      - "configs/t5run/prochoice_pcs.t5-large.json"
 
 process-raw-data:
   #description: Take raw data and clean it up. Add enrichments perform anonymization
@@ -72,8 +88,6 @@ generate-data-split:
 
 build-t5-dataset:
   image: cuda_12.1
-  variables:
-    T5DATA: configs/t5data/prochoice_pcts.json
   rules:
     - when: manual
   script:
@@ -83,8 +97,6 @@ build-t5-dataset:
 train-t5:
   image: ihmc-bose/data
   timeout: 12h
-  variables:
-    T5RUN: configs/t5run/prochoice_PCTS.t5-large.json
   rules:
     - when: manual
   script:

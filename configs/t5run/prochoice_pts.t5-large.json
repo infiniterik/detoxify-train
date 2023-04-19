@@ -1,6 +1,6 @@
 {
-    "dataset": "prochoice.sicon.pcts:v0",
-    "name": "prochoice.pcts.t5-large",
+    "dataset": "prochoice.sicon.pts:v0",
+    "name": "prochoice.pts.t5-large",
     "wandb-project": "knoxcs/detoxify",
     "prototype": "t5",
     "base_model": "t5-large",
@@ -8,7 +8,7 @@
         "source_max_token_len": 512,
         "target_max_token_len": 512,
         "batch_size": 4,
-        "max_epochs": 5,
+        "max_epochs": 3,
         "use_gpu": 3,
         "output_dir": "outputs",
         "strategy": "fsdp"

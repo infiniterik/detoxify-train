@@ -1,11 +1,11 @@
 {
     "version": "v0",
-    "target": "prochoice.sicon.pc",
+    "target": "prochoice.sicon.pts",
     "description": "Prochoice dataset with parent child",
     "wandb-project": "knoxcs/detoxify",
     "base-dataset": "sicon",
     "base-version": "v0",
     "dataset": {
-        "preprocess": "get_parent_child"
+        "preprocess": "get_post_toxic_summary"
     }
 }
