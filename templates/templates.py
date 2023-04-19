@@ -151,10 +151,11 @@ def process_data(config):
     res = {}
     import json
     print(json.dumps(config, indent=4))
+    dcon = config["dataset"]
     for split in ["train", "eval", "test"]:
-        load_data(f'artifacts/{config["base-dataset"]}:{config["base-version"]}/{split}.json')
-        fn = config["dataset"].get("preprocess", "get_parent_child")
-        args = {k: v for k, v in config.get("args", {}).items()}
+        df = load_data(f'artifacts/{config["base-dataset"]}:{config["base-version"]}/{split}.json')
+        fn = dcon.get("preprocess", "get_parent_child")
+        args = {k: v for k, v in dcon.get("args", {}).items()}
         args["df"] = data
         res[split] = apply_function(fn, args)
     return res
