@@ -10,8 +10,9 @@ def train(train_df, eval_df, prototype="t5", base_model="t5-large", logger="defa
     # load (supports t5, mt5, byT5 models)
     model.from_pretrained(prototype, base_model)
     # train
-    train_df = train_df[~train_df["source_text"].str.contains("[deleted]")]
-    eval_df = eval_df[~eval_df["source_text"].str.contains("[deleted]")]
+    remove_str = "(\[deleted\]|\[ Removed by Reddit \])"
+    train_df = train_df[~train_df["source_text"].str.contains(remove_str)]
+    eval_df = eval_df[~eval_df["source_text"].str.contains(remove_str)]
     model.train(train_df=train_df, # pandas dataframe with 2 columns: source_text & target_text
                 eval_df=eval_df, # pandas dataframe with 2 columns: source_text & target_text
                 source_max_token_len = args.get("source_max_token_len", 512), 
