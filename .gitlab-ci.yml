@@ -23,7 +23,7 @@ variables:
       - "configs/t5data/prochoice_pct.json"
       - "configs/t5data/prochoice_pcs.json"
   T5RUN: 
-    value: "configs/t5run/prochoice_pcts.json"
+    value: "configs/t5run/prochoice_pcts.t5-large.json"
     options:
       - "configs/t5run/prochoice_pcts.t5-large.json"
       - "configs/t5run/prochoice_pc.t5-large.json"
