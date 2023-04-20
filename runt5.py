@@ -121,7 +121,7 @@ def test_t5(config, n=-1):
         }
 
     print("starting test")
-    test["results"] = test.progress_apply(lambda x: get_predictions(x["text"]), axis=1)
+    test["results"] = test.progress_apply(lambda x: get_predictions(x["source_text"]), axis=1)
 
     test.to_json("result.json")
 
