@@ -112,7 +112,7 @@ def test_t5(config, n=-1):
 
     model = SimpleT5()
     # load (supports t5, mt5, byT5 models)
-    model.from_pretrained(prototype, model_path)
+    model.from_pretrained(config["prototype"], model_path)
 
     def get_predictions(x):
         return {
