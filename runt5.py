@@ -95,6 +95,40 @@ def train_t5(config):
     artifact.add_dir(config["args"]["output_dir"]+"_model")
     experiment.log_artifact(artifact)
 
+def test_t5(config, n=-1):
+    config = json.load(open(config))
+    entity, project = config["wandb-project"].split("/")
+
+    experiment = wandb.init(project=project, entity=entity, group="hyperion")
+    dataset = wandb.use_artifact(config["wandb-project"] + "/" + config["dataset"])
+    dataset = dataset.download()
+    model = wandb.use_artifact(config["wandb-project"] + "/" + config["name"])
+    model_path = model.download()
+    test = pd.read_json(dataset+"/test.json")
+    if n > -1:
+        test = test.head(n)
+
+    model = SimpleT5()
+    # load (supports t5, mt5, byT5 models)
+    model.from_pretrained(prototype, model_path)
+
+    def get_predictions(x):
+        return {
+            "high" : model.predict(x.replace("A low toxicity reply:", "A high toxicity reply:")),
+            "low" : model.predict(x.replace("A high toxicity reply:", "A low toxicity reply:"))
+        }
+
+    print("starting test")
+    test["results"] = test.progress_apply(lambda x: get_predictions(x["text"]), axis=1)
+
+    test.to_json("result.json")
+
+    artifact = wandb.Artifact(config["name"]+"-test", type="dataset")
+    artifact.add_file("result.json"")
+    experiment.log_artifact(artifact)
+
+
+
 """
 {
     "dataset": "prochoice_PCTS:v0",
