@@ -113,3 +113,12 @@ test-t5:
     - pip install git+https://github.com/knoxml/simplet5 protobuf==3.20.*
     - python -c "import runt5; runt5.test_t5('$T5RUN', 500)"
     #- python -c "import runt5; runt5.train_t5('$T5RUN')"    
+  
+all-t5:
+  image: ihmc-bose/data
+  timeout: 36h
+  rules:
+    - when: manual
+  script:
+    - pip install git+https://github.com/knoxml/simplet5 protobuf==3.20.*
+    - sh run_all.sh
