@@ -97,6 +97,9 @@ def train_t5(config):
 
 def test_t5(config, n=-1):
     from simplet5 import SimpleT5
+    import torch
+
+    
     config = json.load(open(config))
     entity, project = config["wandb-project"].split("/")
 
@@ -113,7 +116,7 @@ def test_t5(config, n=-1):
     model = SimpleT5()
     # load (supports t5, mt5, byT5 models)
     model.from_pretrained(config["prototype"], model_path)
-
+    model.device= torch.device("cuda" if torch.cuda.is_available() else "cpu")
     def get_predictions(x):
         return {
             "high" : model.predict(x.replace("A low toxicity reply:", "A high toxicity reply:")),
