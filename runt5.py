@@ -124,7 +124,7 @@ def test_t5(config, n=-1):
     test.to_json("result.json")
 
     artifact = wandb.Artifact(config["name"]+"-test", type="dataset")
-    artifact.add_file("result.json"")
+    artifact.add_file("result.json")
     experiment.log_artifact(artifact)
 
 
