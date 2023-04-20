@@ -96,13 +96,15 @@ def train_t5(config):
     experiment.log_artifact(artifact)
 
 def test_t5(config, n=-1):
+    from simplet5 import SimpleT5
     config = json.load(open(config))
     entity, project = config["wandb-project"].split("/")
 
     experiment = wandb.init(project=project, entity=entity, group="hyperion")
+    print(config["dataset"], config["name"])
     dataset = wandb.use_artifact(config["wandb-project"] + "/" + config["dataset"])
     dataset = dataset.download()
-    model = wandb.use_artifact(config["wandb-project"] + "/" + config["name"])
+    model = wandb.use_artifact(config["wandb-project"] + "/" + config["name"]+":latest")
     model_path = model.download()
     test = pd.read_json(dataset+"/test.json")
     if n > -1:
