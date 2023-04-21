@@ -117,8 +117,11 @@ def test_t5(config, n=-1):
     model.from_pretrained(config["prototype"], model_path)
     def get_predictions(x):
         return {
+            #                                 A low toxicity reply:
             "high" : model.predict(x.replace("A low toxicity reply:", "A high toxicity reply:")),
-            "low" : model.predict(x.replace("A high toxicity reply:", "A low toxicity reply:"))
+            "high_prompt": x.replace("A low toxicity reply:", "A high toxicity reply:"),
+            "low" : model.predict(x.replace("A high toxicity reply:", "A low toxicity reply:")),
+            "low_prompt": x.replace("A high toxicity reply:", "A low toxicity reply:")
         }
 
     print("starting test")
