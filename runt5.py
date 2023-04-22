@@ -123,9 +123,9 @@ def test_t5(config, n=-1):
         return h, hp, l, lp
 
     print("starting test")
-    test["high"], test["high_prompt"], test["low"], test["low_prompt"] = test.progress_apply(lambda x: get_predictions(x["source_text"]), axis=1)
+    test["high"], test["high_prompt"], test["low"], test["low_prompt"] = zip(*test["source_text"].progress_map(lambda x: get_predictions(x)))
 
-    test.to_json("result.json")
+    test.to_csv("result.csv")
 
     artifact = wandb.Artifact(config["name"]+"-test", type="dataset")
     artifact.add_file("result.json")
