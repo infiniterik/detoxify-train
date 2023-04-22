@@ -1,5 +1,5 @@
 {
-    "dataset": "knoxcs/detoxify/chatgpt_ptcs:v1",
+    "dataset": "chatgpt_ptcs:v1",
     "name": "chatgpt.ptcs.large",
     "wandb-project": "knoxcs/detoxify",
     "prototype": "t5",
