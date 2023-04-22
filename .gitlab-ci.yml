@@ -122,3 +122,12 @@ all-t5:
   script:
     - pip install git+https://github.com/knoxml/simplet5 protobuf==3.20.*
     - sh run_all.sh
+
+test-all-t5:
+  image: ihmc-bose/data
+  timeout: 36h
+  rules:
+    - when: manual
+  script:
+    - pip install git+https://github.com/knoxml/simplet5 protobuf==3.20.*
+    - sh test_all.sh

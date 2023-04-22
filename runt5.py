@@ -116,16 +116,14 @@ def test_t5(config, n=-1):
     # load (supports t5, mt5, byT5 models)
     model.from_pretrained(config["prototype"], model_path)
     def get_predictions(x):
-        return {
-            #                                 A low toxicity reply:
-            "high" : model.predict(x.replace("A low toxicity reply:", "A high toxicity reply:")),
-            "high_prompt": x.replace("A low toxicity reply:", "A high toxicity reply:"),
-            "low" : model.predict(x.replace("A high toxicity reply:", "A low toxicity reply:")),
-            "low_prompt": x.replace("A high toxicity reply:", "A low toxicity reply:")
-        }
+        h = model.predict(x.replace("A low toxicity reply:", "A high toxicity reply:")),
+        hp = x.replace("A low toxicity reply:", "A high toxicity reply:"),
+        l = model.predict(x.replace("A high toxicity reply:", "A low toxicity reply:")),
+        lp = x.replace("A high toxicity reply:", "A low toxicity reply:")
+        return h, hp, l, lp
 
     print("starting test")
-    test["results"] = test.progress_apply(lambda x: get_predictions(x["source_text"]), axis=1)
+    test["high"], test["high_prompt"], test["low"], test["low_prompt"] = test.progress_apply(lambda x: get_predictions(x["source_text"]), axis=1)
 
     test.to_json("result.json")
 
