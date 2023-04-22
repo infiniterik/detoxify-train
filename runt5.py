@@ -116,9 +116,9 @@ def test_t5(config, n=-1):
     # load (supports t5, mt5, byT5 models)
     model.from_pretrained(config["prototype"], model_path)
     def get_predictions(x):
-        h = model.predict(x.replace("A low toxicity reply:", "A high toxicity reply:")),
-        hp = x.replace("A low toxicity reply:", "A high toxicity reply:"),
-        l = model.predict(x.replace("A high toxicity reply:", "A low toxicity reply:")),
+        h = model.predict(x.replace("A low toxicity reply:", "A high toxicity reply:"))
+        hp = x.replace("A low toxicity reply:", "A high toxicity reply:")
+        l = model.predict(x.replace("A high toxicity reply:", "A low toxicity reply:"))
         lp = x.replace("A high toxicity reply:", "A low toxicity reply:")
         return h, hp, l, lp
 
