@@ -55,7 +55,7 @@ enrich-results:
     - wandb artifact get $WANDB_PROJECT/sicon-results
     - mkdir enriched_results
     - for f in `ls artifacts/sicon-results:v0`; do \
-        python scripts/batch_enrichment.py --use-gpu artifacts/sicon-results:v0/$f enriched_results/$f \
+        python scripts/batch_enrichment.py --use-gpu artifacts/sicon-results:v0/$f enriched_results/$f; \
       done
     - wandb artifact put --type dataset --name $WANDB_PROJECT/enriched-sicon-results enriched_results
 
