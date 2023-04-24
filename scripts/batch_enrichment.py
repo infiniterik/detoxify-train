@@ -48,9 +48,11 @@ def get_text(row):
 
 def anon_enrich(df, use_gpu=False, chunk_size=32):
     #df['text'] = df.apply(get_text, axis=1)
+    print("clearing empties")
     df = df[df['text'] != '']
+    print("anonymizing")
     #df['datetime'] = pd.to_datetime(df['created_utc'], unit='s')
-    anon = pd.DataFrame(df.apply(lambda row: anonThread(row)[1], axis=1).tolist())
+    anon = pd.DataFrame(df.progress_apply(lambda row: anonThread(row)[1], axis=1).tolist())
     enr_df = batch_enrich(anon, use_gpu, chunk_size)
     return enr_df
 

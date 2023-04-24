@@ -14,3 +14,5 @@ results/
 my_model/
 onnx/
 artifacts/
+enriched_results/
+test_results.txt

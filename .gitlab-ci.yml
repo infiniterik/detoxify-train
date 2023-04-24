@@ -45,6 +45,20 @@ process-raw-data:
     - python scripts/batch_enrichment.py --use-gpu data/$TRANSFORMED_DATA $ENRICHED_DATA
     - wandb artifact put --type dataset --name $WANDB_PROJECT/$ENRICHED_DATA $ENRICHED_DATA
 
+enrich-results:
+  image: ihmc-bose/data
+  rules:
+    - when: manual
+    - allow_failure: true
+    script:
+      - source $DATASET_CONFIG
+      - wandb artifact get $WANDB_PROJECT/sicon-results
+      - mkdir enriched_results
+      - for f in `ls artifacts/sicon-results:v0'; do \
+          python scripts/batch_enrichment.py --use-gpu artifacts/sicon-results:v0/$f enriched_results/$f
+        done
+      - wandb artifact put --type dataset --name $WANDB_PROJECT/enriched-sicon-results enriched_results
+
 add-stances:
   #description: Get stances from enriched data. Result is stored in a separate json file
   image: detection_app
